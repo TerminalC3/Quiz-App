@@ -1,0 +1,19 @@
+
+> There are four options to each question. Choose the one you feel is right.
+
+> Click on the option you chose and your result will be prompted.
+
+> If your answer is correct, you will receive * points.
+> If your answer is wrong, you will lose * points but the answer will be revealed to you.
+
+> Getting * questions right will award you xp points which are used to level up in the game.
+
+> You can use hints by clicking the light bulb button on the top right corner of the window. Doing so will provide you with a clue to the current question but will also reduce * points from your total points.
+
+> You can also click on the "scoreboard" button at the bottom right corner of the window to see your progress in the game.
+
+> When you are ready, click on the "Next" button to move to the next question.
+
+> You can always come back to this help window by clicking on the question mark button on the top left corner.
+
+> If you are done with all the questions, your scorecard will be shown and the game will exit.

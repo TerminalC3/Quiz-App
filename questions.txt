@@ -1,0 +1,199 @@
+ques1: Which of these countries did the British not colonize?
+q1o1: New Zealand
+q1o2: Jamaica
+q1o3: Sweden
+q1o4: Hong Kong
+a1: 3
+h1: A country in Europe.
+
+ques2: When did the second world war end?
+q2o1: 1937
+q2o2: 1929
+q2o3: 1947
+q2o4: 1945
+a2: 4
+h2: The first world war ended in 1918.
+
+ques3: Which one of these is an allied power group in world war 1?
+q3o1: Germany
+q3o2: Italy
+q3o3: Japan
+q3o4: Soviet Union
+a3: 1
+h3: It is not the Soviet Union.
+
+ques4: In which century did the bubonic plague (Black Death) start?
+q4o1: 12th century
+q4o2: 14th century
+q4o3: 10th century
+q4o4: 18th century
+a4: 2
+h4: The plague occured from '46 to '52. Guess the century.
+
+ques5: Who was the founder of the Mauryan Empire?
+q5o1: Ashoka
+q5o2: Chandragupta
+q5o3: Bindusara
+q5o4: Sher Shah Suri
+a5: 2
+h5: It was not Ashoka.
+
+ques6: Where did the British East India company set up trading posts for the first time?
+q6o1: Madras
+q6o2: Calcutta
+q6o3: Bombay
+q6o4: Surat
+a6: 4
+h6: This city is famous for its 'Zari' silk work.
+
+ques7: Which country did Karl Marx belong to?
+q7o1: Russia
+q7o2: France
+q7o3: Germany
+q7o4: Hungary
+a7: 3
+h7: Marx studied law and philosophy at the universities of Bonn and Berlin.
+
+ques8: Who was the Interim Prime Minister of India for two 13-day stints following the death of Jawaharlal Nehru?
+q8o1: Morarji Desai
+q8o2: Lal Bahadur Shastri
+q8o3: Rajendra Prasad
+q8o4: Gulzarilal Nanda
+a8: 4
+h8: It was not the first president of India.
+
+ques9: The first news paper in the world was started by?
+q9o1: China
+q9o2: USA
+q9o3: India
+q9o4: Japan
+a9: 1
+h9: It is the home of Giant Pandas.
+
+ques10: What is the name of the atomic bomb dropped on Hiroshima?
+q10o1: Rolling thunder
+q10o2: Tsar bomb 181
+q10o3: Fat boy
+q10o4: Little boy
+a10: 4
+h10: It was dropped on 6 August 1945 and was the first among the two bombs dropped on Japan by the US.
+
+ques11: Which is considered as oldest civilization of the world?
+q11o1: Keezhadi civilization
+q11o2: Mesopotamian Civilization
+q11o3: Harappan civilization
+q11o4: Indus civilization
+a11: 2
+h11: This civilization is credited with the invention of Wheel and Chariot.
+
+ques12: Which among following is called "Gift of the Nile" ?
+q12o1: Egypt
+q12o2: Greek
+q12o3: Persia
+q12o4: Iraq
+a12: 1
+h12: Best known for tombs.
+
+ques13: The oldest dynasty still ruling in which country?
+q13o1: China
+q13o2: Egypt
+q13o3: England
+q13o4: Japan
+a13: 4
+h13: It is the Imperial House of .....
+
+ques14: Which political party used to have swastik symbol?
+q14o1: Communist Party of China
+q14o2: Republican Party, USA
+q14o3: National Socialist Party, Germany
+q14o4: Liberal Democratic Party of Japan
+a14: 3
+h14: Japan was an ally of this country in world war 2.
+
+ques15: Which of the following city has highest historical monuments?
+q15o1: Chennai
+q15o2: Mumbai
+q15o3: Delhi
+q15o4: Hyderabad
+a15: 3
+h15: Raj Ghat is located in this city.
+
+ques16: Which of the following structures was built in the memory of soldiers who fought in world war 1?
+q16o1: Gateway of India
+q16o2: India Gate
+q16o3: Vijay Stambh
+q16o4: Victoria memorial
+a16: 1
+h16: It is not Victoria memorial.
+
+ques17: Who was the first president of USA?
+q17o1: Grover Cleveland
+q17o2: Geroge Washington
+q17o3: John Adams
+q17o4: Abraham Lincoln
+a17: 2
+h17: A state in USA is named after him.
+
+ques18: Who was the first to sail round the world?
+q18o1: Ferdinand Magellan
+q18o2: Francis Drake
+q18o3: Christopher Columbus
+q18o4: Vasco da Gama
+a18: 1
+h18: He was Portuguese.
+
+ques19: In which year did Pakistan became a federal republic?
+q19o1: 1948
+q19o2: 1947
+q19o3: 1956
+q19o4: 1971
+a19: 3
+h19: It was after 1950.
+
+ques20: Which dynasty was responsible for the Mahabalipuram monuments near Chennai?
+q20o1: Mughal dynasty
+q20o2: Pallava dynasty
+q20o3: Chola dynasty
+q20o4: Ashoka dynasty
+a20: 2
+h20: It was a dynasty in south east Asia.
+
+ques21: In which Country did the first Marxist revolution take place?
+q21o1: Germany
+q21o2: France
+q21o3: Russia
+q21o4: Japan
+a21: 3
+h21: It is an Asian country.
+
+ques22: Who was defeated in the battle of waterloo?
+q22o1: Napolean Bonaparte
+q22o2: Joseph Stalin
+q22o3: Adolf Hitler
+q22o4: Genghis Khan
+a22: a
+h22: He established a code which granted several privilages to the common public.
+
+ques23: Who among the following was popularly known as the 'Frontier Gandhi'?
+q23o1: Hasrat Mohani
+q23o2: Maulana Abul Kalam Azad
+q23o3: Abdul Ghaffar Khan
+q23o4: Iqbal Khan
+a23: 3
+h22: He was an Afgan politician.
+
+ques24: Boston Tea Party protest was associated with the revolution of which of these countries?
+q24o1: America
+q24o2: Italy
+q24o3: France
+q24o4: Austria
+a24: 1
+h24: Boston is a city in Massachusetts.
+
+ques25: Which two countries invaded Poland in 1939?
+q25o1: America and Soviet Union
+q25o2: Soviet Union and Germany
+q25o3: Italy and Germany
+q25o4: Germany and France
+a25: 2
+h25: In the Aftermath of the invasion, Poland was devided between these two countries.
