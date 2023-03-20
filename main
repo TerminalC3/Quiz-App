@@ -1,0 +1,375 @@
+import tkinter.messagebox
+
+import PIL
+from PIL import ImageTk, Image
+import tkinter
+from tkinter import *
+from pygame import mixer
+import mysql.connector
+from datetime import datetime
+
+
+db = mysql.connector.connect(
+    host='localhost',
+    user='root',
+    passwd='root',
+    database='quizapp'
+)
+my_cursor = db.cursor()
+
+my_cursor.execute("USE quizapp")
+
+ques = 0
+points = 0
+done = 0
+hints_used = 0
+correct_ans = 0
+wrong_ans = 0
+quit = 0
+num = 1
+
+
+def close_button():
+    Mwindow.destroy()
+
+
+def ques_submit():
+    global num
+    ans = answer_box.get()
+    question = entry_ques.get()
+    option1 = entry_option1.get()
+    option2 = entry_option2.get()
+    option3 = entry_option3.get()
+    option4 = entry_option4.get()
+    hint = entry_hint.get()
+
+    my_cursor.execute("INSERT INTO questions (Questions, Option1, Option2, Option3, Option4, Answer, Hint) VALUES ('{q}', '{o1}', '{o2}', '{o3}', '{o4}', '{a}', '{h}');".format(q=question, o1=option1, o2=option2, o3=option3, o4=option4, a=ans, h=hint))
+    db.commit()
+
+    entry_ques.delete(0, END)
+    entry_option1.delete(0, END)
+    entry_option2.delete(0, END)
+    entry_option3.delete(0, END)
+    entry_option4.delete(0, END)
+    entry_hint.delete(0, END)
+    answer_box.delete(0, END)
+
+    num += 1
+    tex = "Add question" + " " + str(num)
+
+    ques_num.config(text=tex)
+
+
+def question_button():
+    global answer_box
+    global entry_ques
+    global entry_option1
+    global entry_option2
+    global entry_option3
+    global entry_option4
+    global entry_hint
+    global ques_num
+    global num
+    global win_frame
+    global ques_num
+
+    window = Tk()
+    window.title("Add questions")
+    window.config(bg="#03D1BE")
+    window.geometry("800x650")
+
+    win_frame = Frame(window, width="800", height="650")
+    win_frame.pack()
+
+    tex = "Add question : " + " " + str(num)
+
+    ques_num = Label(win_frame, text=tex, font=("Consolas", 20))
+    ques_num.place(x=320, y=30)
+
+    label_ques = Label(win_frame, text="Question : ", font=("Consolas", 20))
+    label_ques.place(x=100, y=130)
+
+    entry_ques = Entry(win_frame, font=("Consolas", 20), bg="red", width=30)
+    entry_ques.place(x=300, y=130)
+
+    label_o1 = Label(win_frame, text="Option 1 : ", font=("Consolas", 20))
+    label_o1.place(x=100, y=190)
+
+    entry_option1 = Entry(win_frame, font=("Consolas", 20), bg="red")
+    entry_option1.place(x=360, y=190)
+
+    label_o2 = Label(win_frame, text="Option 2 : ", font=("Consolas", 20))
+    label_o2.place(x=100, y=250)
+
+    entry_option2 = Entry(win_frame, font=("Consolas", 20), bg="red")
+    entry_option2.place(x=360, y=250)
+
+    label_o3 = Label(win_frame, text="Option 3 : ", font=("Consolas", 20))
+    label_o3.place(x=100, y=310)
+
+    entry_option3 = Entry(win_frame, font=("Consolas", 20), bg="red")
+    entry_option3.place(x=360, y=310)
+
+    label_o4 = Label(win_frame, text="Option 4 : ", font=("Consolas", 20))
+    label_o4.place(x=100, y=370)
+
+    entry_option4 = Entry(win_frame, font=("Consolas", 20), bg="red")
+    entry_option4.place(x=360, y=370)
+
+    label_hint = Label(win_frame, text="Hint : ", font=("Consolas", 20))
+    label_hint.place(x=100, y=430)
+
+    entry_hint = Entry(win_frame, font=("Consolas", 20), bg="red")
+    entry_hint.place(x=360, y=430)
+
+    label_ans = Label(win_frame, text="Correct option : ", font=("Consolas", 20))
+    label_ans.place(x=100, y=490)
+
+    answer_box = Spinbox(win_frame, from_=1, to=4, font=("Consolas", 20), bg="red", width=5)
+    answer_box.place(x=360, y=490)
+
+    question_submit = Button(win_frame, text="Submit", font=("Consolas", 20), bg="red", command=ques_submit)
+    question_submit.place(x=360, y=580)
+
+    window.mainloop()
+
+
+def next_go():
+    for widget in main_frame.winfo_children():
+        widget.destroy()
+    starter()
+
+
+def get(value):
+    global points
+    global done
+    global wrong_ans
+    global correct_ans
+
+    my_cursor.execute("SELECT Answer FROM questions WHERE Sno = {ques}".format(ques=ques))
+    ans = my_cursor.fetchone()[0]
+
+    if ans == value and done == 0:
+        points += 50
+        correct = Label(main_frame, text = "CORRECT!! :D", font = ('Helvetica', 15)).pack()
+        correct_ans += 1
+
+    elif ans != value and done == 0:
+        points -= 20
+        wrong = Label(main_frame, text = "WRONG :(   Correct answer is option " + str(ans), font = ('Helvetica', 15)).pack()
+        wrong_ans += 1
+
+    done = 1
+
+
+def get_name():
+    name = name_entry.get()
+    time = datetime.now()
+    time = str(time)[0:-7]
+
+    my_cursor.execute("INSERT INTO points (username, Score, Time) VALUES ('{name}', {score}, '{time}');".format(name=name, score=int(points), time=time))
+    db.commit()
+    swindow.destroy()
+    Mwindow.destroy()
+
+
+def score():
+    global ques
+    global correct_ans
+    global wrong_ans
+    global points
+    global hints_used
+    global quit
+    global name_entry
+    global swindow
+
+    swindow = Tk()
+    swindow.title("Scorecard")
+    swindow.config(bg="#03D1BE")
+    swindow.geometry("800x600")
+
+    if quit == 0:
+        score_label = Label(swindow, text = "Attempted questions: " + str(ques) + "\nQuestions correct: " + str(correct_ans)
+                         + "\nQuestions wrong: " + str(wrong_ans) + "\nHints used: " + str(hints_used) + "\nPoints earned: " + str(points),
+                            fg = "black", bg = "red", font = ('Arial', 30, 'bold')).place(x = 200, y = 150)
+
+    else:
+        score_label = Label(swindow, text = "QUIZ COMPLETED SUCCESSFULLY!!\nTHIS IS HOW YOU HAVE DONE\n\nAttempted questions: " + str(ques) + "\nQuestions correct: " + str(correct_ans)
+                     + "\nQuestions wrong: " + str(wrong_ans) + "\nHints used: " + str(hints_used) + "\nPoints earned: " + str(points),
+                        fg = "black", bg = "red", font = ('Arial', 30, 'bold')).place(x = 40, y = 80)
+
+        name_entry = Entry(swindow, fg = "black", bg = "red", font = ('Arial', 20, 'bold'))
+        name_entry.place(x=240, y=500)
+
+        sub_button = Button(swindow, text = "SUBMIT NAME", fg = "black", bg = "red", font = ('Arial', 15, 'bold'), command=get_name).place(x=600, y=490)
+    swindow.mainloop()
+
+
+def hint():
+    global done
+    global points
+    global hints_used
+
+    my_cursor.execute("SELECT Hint FROM questions WHERE Sno = {ques}".format(ques=ques + 1))
+    hint = my_cursor.fetchone()[0]
+
+    if done == 1:
+        hint_label = Label(main_frame, text= "Hint: " + str(hint), font = ("consolas", 15, "bold"), fg = 'green', bg = '#03D1BE', wraplength=770, justify="center")
+        hint_label.pack(side = BOTTOM)
+
+    else:
+        hint_label = Label(main_frame, text= "Hint: " + str(hint), font = ("consolas", 15, "bold"), fg = 'green', bg = '#03D1BE', wraplength=770, justify="center")
+        hint_label.pack(side = BOTTOM)
+
+        points -= 10
+        hints_used += 1
+
+
+def how():
+    Hwindow = Tk()
+
+    Hwindow.title("How to play")
+    Hwindow.config(bg="#03D1BE")
+    Hwindow.geometry("800x600")
+
+    how_to = open("How to Play.txt")
+    read = how_to.read()
+
+    how_label = Label(Hwindow, text=read, font=("Arial", 15), fg='black', bg='#ccff99', wraplength=770, justify="left")
+    how_label.pack()
+
+    Hwindow.mainloop()
+
+
+def starter():
+
+    my_cursor.execute("SELECT COUNT(Sno) FROM questions")
+    count = my_cursor.fetchone()[0]
+
+    if count == 0:
+        tkinter.messagebox.showerror("Error", "No questions available! \n Add questions first!")
+        Mwindow.destroy()
+
+    frame.destroy()
+
+    global ques
+    global done
+    global quit
+
+    my_cursor.execute("SELECT count(Sno) FROM questions")
+    total_ques = my_cursor.fetchone()[0]
+
+    if ques == total_ques:
+        quit = 1
+        score()
+        exit()
+
+    my_cursor.execute("SELECT Questions FROM questions WHERE Sno = {ques}".format(ques=ques+1))
+    question = my_cursor.fetchone()[0]
+
+    my_cursor.execute("SELECT Option1 FROM questions WHERE Sno = {ques}".format(ques=ques + 1))
+    option1 = my_cursor.fetchone()[0]
+
+    my_cursor.execute("SELECT Option2 FROM questions WHERE Sno = {ques}".format(ques=ques + 1))
+    option2 = my_cursor.fetchone()[0]
+
+    my_cursor.execute("SELECT Option3 FROM questions WHERE Sno = {ques}".format(ques=ques + 1))
+    option3 = my_cursor.fetchone()[0]
+
+    my_cursor.execute("SELECT Option4 FROM questions WHERE Sno = {ques}".format(ques=ques + 1))
+    option4 = my_cursor.fetchone()[0]
+
+    r = IntVar()
+    done = 0
+
+    ques_label = Label(main_frame, text = str(ques+1) + '/' + str(total_ques), font = ('Consolas', 15, 'bold'), fg = "red", bg = '#03D1BE')
+    ques_label.pack(side=tkinter.TOP)
+
+    hint_button = Button(main_frame, text = "💡", font = ('Consolas', 15, 'bold'), bg = '#ffffcc', command = hint)
+    hint_button.pack(side=tkinter.RIGHT, anchor=NE)
+
+    how_button = Button(main_frame, text = "❔", font = ('Consolas', 15, 'bold'), bg = '#ffffcc', command = how)
+    how_button.pack(side=tkinter.LEFT, anchor=NW)
+
+    score_button = Button(main_frame, text = "SCORECARD 📄", font = ('Consolas', 13, 'bold'), bg = '#ffffcc', command = score)
+    score_button.place(x=683, y=450)
+
+    sound_button = Button(main_frame, text="SOUND 📣", font=('Consolas', 13, 'bold'), bg='#ffffcc', command=sound)
+    sound_button.place(x=0, y=450)
+
+    fill_label2 = Label(main_frame, bg='#03D1BE', width = 800, height = 3)
+    fill_label2.pack()
+
+    question = Label(main_frame, text= question, font = ("comic sans", 20, "bold"), fg = 'brown', bg = '#03D1BE', wraplength=770, justify="center")
+    question.pack()
+
+    fill_label2 = Label(main_frame, bg='#03D1BE', height = 3)
+    fill_label2.pack()
+
+    option1 = Radiobutton(main_frame, text= option1, font = ('Arial', 15), fg = 'black', bg = '#03D1BE', wraplength=750, justify="center", variable = r, value = 1, command = lambda: get(r.get()))
+    option1.pack()
+    fill_label2 = Label(main_frame, bg='#03D1BE', height=2)
+    fill_label2.pack()
+
+    option2 = Radiobutton(main_frame, text= option2, font = ('Arial', 15), fg = 'black', bg = '#03D1BE', wraplength=750, justify="center", variable = r, value = 2, command = lambda: get(r.get()))
+    option2.pack()
+    fill_label2 = Label(main_frame, bg='#03D1BE', height=2)
+    fill_label2.pack()
+
+    option3 = Radiobutton(main_frame, text= option3, font = ('Arial', 15), fg = 'black', bg = '#03D1BE', wraplength=750, justify="center", variable = r, value = 3, command = lambda: get(r.get()))
+    option3.pack()
+    fill_label2 = Label(main_frame, bg='#03D1BE', height=2)
+    fill_label2.pack()
+
+    option4 = Radiobutton(main_frame, text= option4, font = ('Arial', 15), fg = 'black', bg = '#03D1BE', wraplength=750, justify="center", variable = r, value = 4, command = lambda: get(r.get()))
+    option4.pack()
+    fill_label2 = Label(main_frame, bg='#03D1BE', height=2)
+    fill_label2.pack()
+
+    ques = ques + 1
+
+    next_button = Button(main_frame, text="Next", font = ('Consolas', 15, 'bold'), fg = 'black', bg = '#ffffcc', command = next_go)
+    next_button.pack()
+
+
+def sound():
+    if not mixer.music.get_busy():
+        mixer.music.play()
+
+    else:
+        mixer.music.pause()
+
+
+mixer.init()
+mixer.music.load("openmusic.mp3")
+
+Mwindow = Tk()
+
+Mwindow.title("History Trivia")
+Mwindow.config(bg="#03D1BE")
+Mwindow.geometry("800x650")
+
+frame = Frame(Mwindow, width="800", height="650")
+frame.pack()
+
+path = "image.png"
+image = PIL.ImageTk.PhotoImage(PIL.Image.open(path))
+video_label = Label(frame, image=image)
+video_label.pack()
+
+button_start = Button(frame, text="START GAME", font=("Arial", 20, "bold"), bg="red", command=starter)
+button_start.place(x=315, y=380)
+
+button_close = Button(frame, text="CLOSE", font=("Arial", 20, "bold"), bg="red", command=close_button)
+button_close.place(x=360, y=540)
+
+button_questions = Button(frame, text="ADD QUESTIONS", font=("Arial", 20, "bold"), bg="red", command=question_button)
+button_questions.place(x=290, y=460)
+
+button_sound = Button(frame, text="SOUND 📢", font=("Arial", 12, "bold"), bg="red", command=sound)
+button_sound.place(x=700, y=10)
+
+main_frame = Frame(Mwindow, width="800", height="600", bg='#03D1BE')
+main_frame.pack()
+
+Mwindow.mainloop()
