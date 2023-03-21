@@ -1,0 +1,7 @@
+Database name - quizapp
+
+Tables - questions, points
+
+questions columns - Sno, Questions, Option1, Option2, Option3, Option4, Answer, Hint
+
+points columns - ID, Username, Score, Time
