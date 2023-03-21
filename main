@@ -1,9 +1,9 @@
 import tkinter.messagebox
-
 import PIL
 from PIL import ImageTk, Image
 import tkinter
 from tkinter import *
+from tkinter import ttk
 from pygame import mixer
 import mysql.connector
 from datetime import datetime
@@ -35,7 +35,11 @@ def close_button():
 
 def ques_submit():
     global num
-    ans = answer_box.get()
+
+    my_cursor.execute("SELECT * FROM questions WHERE Sno = {num}".format(num=num))
+    c = my_cursor.fetchone()
+
+    ans = int(answer_box.get())
     question = entry_ques.get()
     option1 = entry_option1.get()
     option2 = entry_option2.get()
@@ -43,8 +47,13 @@ def ques_submit():
     option4 = entry_option4.get()
     hint = entry_hint.get()
 
-    my_cursor.execute("INSERT INTO questions (Questions, Option1, Option2, Option3, Option4, Answer, Hint) VALUES ('{q}', '{o1}', '{o2}', '{o3}', '{o4}', '{a}', '{h}');".format(q=question, o1=option1, o2=option2, o3=option3, o4=option4, a=ans, h=hint))
-    db.commit()
+    if c is not None:
+        my_cursor.execute("UPDATE questions SET Questions = '{q}', Option1 = '{o1}', Option2 = '{o2}', Option3 = '{o3}', Option4 = '{o4}', Answer = '{a}', Hint = '{h}' WHERE Sno = {num};".format(q=question, o1=option1, o2=option2, o3=option3, o4=option4, a=ans, h=hint, num=int(num)))
+        db.commit()
+
+    else:
+        my_cursor.execute("INSERT INTO questions (Questions, Option1, Option2, Option3, Option4, Answer, Hint) VALUES ('{q}', '{o1}', '{o2}', '{o3}', '{o4}', '{a}', '{h}');".format(q=question, o1=option1, o2=option2, o3=option3, o4=option4, a=ans, h=hint))
+        db.commit()
 
     entry_ques.delete(0, END)
     entry_option1.delete(0, END)
@@ -55,9 +64,71 @@ def ques_submit():
     answer_box.delete(0, END)
 
     num += 1
-    tex = "Add question" + " " + str(num)
+    tex = "Add question" + " - " + str(num)
 
     ques_num.config(text=tex)
+
+
+def back():
+    global num
+
+    if num != 1:
+        num -= 1
+
+        my_cursor.execute("SELECT * FROM questions WHERE Sno = {num}".format(num=num))
+        c = my_cursor.fetchone()
+
+        if c is not None:
+            entry_ques.delete(0, END)
+            entry_option1.delete(0, END)
+            entry_option2.delete(0, END)
+            entry_option3.delete(0, END)
+            entry_option4.delete(0, END)
+            entry_hint.delete(0, END)
+            answer_box.delete(0, END)
+
+            tex = "Add question - " + " " + str(num)
+
+            ques_num.config(text=tex)
+            entry_ques.insert(0, c[1])
+            entry_option1.insert(0, c[2])
+            entry_option2.insert(0, c[3])
+            entry_option3.insert(0, c[4])
+            entry_option4.insert(0, c[5])
+            entry_hint.insert(0, c[7])
+            answer_box.insert(0, c[6])
+
+
+def front():
+    global num
+
+    my_cursor.execute("SELECT MAX(Sno) FROM questions")
+    q = my_cursor.fetchone()[0]
+
+    if q > num:
+        num += 1
+        my_cursor.execute("SELECT * FROM questions WHERE Sno = {num}".format(num=num))
+        c = my_cursor.fetchone()
+
+        if c is not None:
+            entry_ques.delete(0, END)
+            entry_option1.delete(0, END)
+            entry_option2.delete(0, END)
+            entry_option3.delete(0, END)
+            entry_option4.delete(0, END)
+            entry_hint.delete(0, END)
+            answer_box.delete(0, END)
+
+            tex = "Add question - " + " " + str(num)
+
+            ques_num.config(text=tex)
+            entry_ques.insert(0, c[1])
+            entry_option1.insert(0, c[2])
+            entry_option2.insert(0, c[3])
+            entry_option3.insert(0, c[4])
+            entry_option4.insert(0, c[5])
+            entry_hint.insert(0, c[7])
+            answer_box.insert(0, c[6])
 
 
 def question_button():
@@ -81,10 +152,21 @@ def question_button():
     win_frame = Frame(window, width="800", height="650")
     win_frame.pack()
 
-    tex = "Add question : " + " " + str(num)
+    my_cursor.execute("SELECT MAX(Sno) FROM questions")
+    num = my_cursor.fetchone()[0]
+
+    if num is None:
+        num = 1
+    else:
+        num += 1
+
+    tex = "Add question - " + " " + str(num)
+
+    snd_button = Button(win_frame, text="SOUND 📣", font=('Consolas', 13, 'bold'), bg='red', command=sound)
+    snd_button.place(x=700, y=10)
 
     ques_num = Label(win_frame, text=tex, font=("Consolas", 20))
-    ques_num.place(x=320, y=30)
+    ques_num.place(x=300, y=30)
 
     label_ques = Label(win_frame, text="Question : ", font=("Consolas", 20))
     label_ques.place(x=100, y=130)
@@ -128,6 +210,12 @@ def question_button():
     answer_box = Spinbox(win_frame, from_=1, to=4, font=("Consolas", 20), bg="red", width=5)
     answer_box.place(x=360, y=490)
 
+    back_button = Button(win_frame, text="<", font=("Consolas", 30), bg="red", command=back)
+    back_button.place(x=5, y=295)
+
+    front_button = Button(win_frame, text=">", font=("Consolas", 30), bg="red", command=front)
+    front_button.place(x=735, y=295)
+
     question_submit = Button(win_frame, text="Submit", font=("Consolas", 20), bg="red", command=ques_submit)
     question_submit.place(x=360, y=580)
 
@@ -151,12 +239,12 @@ def get(value):
 
     if ans == value and done == 0:
         points += 50
-        correct = Label(main_frame, text = "CORRECT!! :D", font = ('Helvetica', 15)).pack()
+        correct = Label(main_frame, text = "CORRECT!! :D", font = ('Helvetica', 15), bg="#03D1BE").pack()
         correct_ans += 1
 
     elif ans != value and done == 0:
         points -= 20
-        wrong = Label(main_frame, text = "WRONG :(   Correct answer is option " + str(ans), font = ('Helvetica', 15)).pack()
+        wrong = Label(main_frame, text = "WRONG :(   Correct answer is option " + str(ans), bg="#03D1BE", font = ('Helvetica', 15)).pack()
         wrong_ans += 1
 
     done = 1
@@ -194,7 +282,7 @@ def score():
                             fg = "black", bg = "red", font = ('Arial', 30, 'bold')).place(x = 200, y = 150)
 
     else:
-        score_label = Label(swindow, text = "QUIZ COMPLETED SUCCESSFULLY!!\nTHIS IS HOW YOU HAVE DONE\n\nAttempted questions: " + str(ques) + "\nQuestions correct: " + str(correct_ans)
+        score_label = Label(swindow, text = "QUIZ COMPLETED!!\nTHIS IS HOW YOU HAVE DONE\n\nAttempted questions: " + str(ques) + "\nQuestions correct: " + str(correct_ans)
                      + "\nQuestions wrong: " + str(wrong_ans) + "\nHints used: " + str(hints_used) + "\nPoints earned: " + str(points),
                         fg = "black", bg = "red", font = ('Arial', 30, 'bold')).place(x = 40, y = 80)
 
@@ -300,7 +388,7 @@ def starter():
     fill_label2 = Label(main_frame, bg='#03D1BE', width = 800, height = 3)
     fill_label2.pack()
 
-    question = Label(main_frame, text= question, font = ("comic sans", 20, "bold"), fg = 'brown', bg = '#03D1BE', wraplength=770, justify="center")
+    question = Label(main_frame, text= question, font = ("comic sans", 20, "bold"), fg = 'brown', bg = '#03D1BE', wraplength=720, justify="center")
     question.pack()
 
     fill_label2 = Label(main_frame, bg='#03D1BE', height = 3)
@@ -332,6 +420,149 @@ def starter():
     next_button.pack()
 
 
+def srch_name():
+    term = search_name.get()
+
+    my_cursor.execute("SELECT * FROM points WHERE username = '{term}'".format(term=term))
+    a = my_cursor.fetchall()
+
+    my_cursor.execute("SELECT COUNT(ID) FROM points WHERE username = '{term}'".format(term=term))
+    count = my_cursor.fetchone()[0]
+
+    for i in tree.get_children():
+        tree.delete(i)
+
+    for row in a:
+        tree.insert("", END, values=row)
+
+    tree.config(height=int(count))
+
+
+def reset():
+    try:
+        search_id.destroy()
+        id_button.config(text="Search by ID", command=id)
+    except NameError:
+        pass
+
+    try:
+        search_name.destroy()
+        name_button.config(text="Search by Username", command=username)
+    except NameError:
+        pass
+
+    for i in tree.get_children():
+        tree.delete(i)
+
+    my_cursor.execute("SELECT * FROM points ORDER BY Score desc;")
+    a = my_cursor.fetchall()
+
+    my_cursor.execute("SELECT COUNT(ID) FROM points;")
+    count = my_cursor.fetchone()[0]
+
+    for row in a:
+        tree.insert("", END, values=row)
+
+    tree.config(height=int(count))
+
+    reset_button.place_forget()
+
+
+def username():
+    global search_name
+
+    search_name = Entry(score_window, font=("Consolas", 10), width=15)
+    search_name.place(x=500, y=30)
+
+    name_button.config(text="SEARCH", command=srch_name)
+
+    reset_button.place(x=650, y=30)
+
+
+def srch_id():
+    term = search_id.get()
+
+    my_cursor.execute("SELECT * FROM points WHERE ID = '{term}'".format(term=term))
+    a = my_cursor.fetchall()
+
+    my_cursor.execute("SELECT COUNT(ID) FROM points WHERE ID = '{term}'".format(term=term))
+    count = my_cursor.fetchone()[0]
+
+    for i in tree.get_children():
+        tree.delete(i)
+
+    for row in a:
+        tree.insert("", END, values=row)
+
+    tree.config(height=int(count))
+
+
+def id():
+    global search_id
+
+    search_id = Entry(score_window, font=("Consolas", 10), width=15)
+    search_id.place(x=500, y=60)
+
+    id_button.config(text="SEARCH", command=srch_id)
+
+    reset_button.place(x=650, y=60)
+
+
+def score_button():
+    global tree, name_button, id_button, score_window, reset_button, a
+
+    score_window = Tk()
+    score_window.title("Scores")
+    score_window.config(bg="#03D1BE")
+    score_window.geometry("800x650")
+
+    label_frame = Frame(score_window, height=600, width=700, bg="#03D1BE")
+    label_frame.pack()
+
+    score_label = Label(label_frame, text="SCORE RECORD", font=("Consolas", 14, "bold"), bg="#03D1BE")
+    score_label.pack()
+
+    name_button = Button(label_frame, text="Search by Username", font=("Consolas", 10), command=username)
+    name_button.pack()
+
+    id_button = Button(label_frame, text="Search by ID", font=("Consolas", 10), command=id)
+    id_button.pack()
+
+    reset_button = Button(score_window, text="Reset", font=("Consolas", 9), command=reset)
+
+    score_frame = Frame(score_window, height=600, width=700, bg="#03D1BE")
+    score_frame.pack()
+
+    my_cursor.execute("SELECT COUNT(ID) FROM points;")
+
+    count = my_cursor.fetchone()[0]
+
+    if count > 31:
+        count = 31
+
+    my_cursor.execute("SELECT * FROM points ORDER BY Score desc;")
+    a = my_cursor.fetchall()
+    tree = ttk.Treeview(score_frame, columns=("ID", "Username", "Score", "Date"), show="headings", height=int(count))
+
+    scrollbar = ttk.Scrollbar(score_frame, orient=VERTICAL, command=tree.yview)
+    tree.configure(yscrollcommand=scrollbar.set)
+    scrollbar.place(anchor="e")
+
+    tree.heading("#1", text="ID")
+    tree.column("#1", anchor=CENTER, width=100)
+    tree.heading("#2", text="Username")
+    tree.column("#2", anchor=CENTER, width=100)
+    tree.heading("#3", text="Score")
+    tree.column("#3", anchor=CENTER, width=100)
+    tree.heading("#4", text="Date")
+    tree.column("#4", anchor=CENTER, width=170)
+
+    tree.place(x=130, y=60)
+
+    for row in a:
+        tree.insert("", END, values=row)
+
+
 def sound():
     if not mixer.music.get_busy():
         mixer.music.play()
@@ -345,26 +576,33 @@ mixer.music.load("openmusic.mp3")
 
 Mwindow = Tk()
 
-Mwindow.title("History Trivia")
+Mwindow.title("Quiz App")
 Mwindow.config(bg="#03D1BE")
 Mwindow.geometry("800x650")
 
 frame = Frame(Mwindow, width="800", height="650")
 frame.pack()
 
-path = "image.png"
-image = PIL.ImageTk.PhotoImage(PIL.Image.open(path))
-video_label = Label(frame, image=image)
-video_label.pack()
+image = ImageTk.PhotoImage(PIL.Image.open("image.png"))
+icon = ImageTk.PhotoImage(PIL.Image.open("Quiz-Logo.png"))
+
+Mwindow.iconphoto(True, icon)
+
+image_label = Label(frame, image=image)
+image_label.pack()
+
 
 button_start = Button(frame, text="START GAME", font=("Arial", 20, "bold"), bg="red", command=starter)
 button_start.place(x=315, y=380)
 
-button_close = Button(frame, text="CLOSE", font=("Arial", 20, "bold"), bg="red", command=close_button)
-button_close.place(x=360, y=540)
-
 button_questions = Button(frame, text="ADD QUESTIONS", font=("Arial", 20, "bold"), bg="red", command=question_button)
-button_questions.place(x=290, y=460)
+button_questions.place(x=290, y=450)
+
+button_score = Button(frame, text="VIEW SCORES", font=("Arial", 20, "bold"), bg="red", command=score_button)
+button_score.place(x=310, y=520)
+
+button_close = Button(frame, text="CLOSE", font=("Arial", 20, "bold"), bg="red", command=close_button)
+button_close.place(x=360, y=590)
 
 button_sound = Button(frame, text="SOUND 📢", font=("Arial", 12, "bold"), bg="red", command=sound)
 button_sound.place(x=700, y=10)
