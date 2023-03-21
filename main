@@ -39,7 +39,7 @@ def ques_submit():
     my_cursor.execute("SELECT * FROM questions WHERE Sno = {num}".format(num=num))
     c = my_cursor.fetchone()
 
-    ans = int(answer_box.get())
+    ans = answer_box.get()
     question = entry_ques.get()
     option1 = entry_option1.get()
     option2 = entry_option2.get()
@@ -47,26 +47,34 @@ def ques_submit():
     option4 = entry_option4.get()
     hint = entry_hint.get()
 
-    if c is not None:
-        my_cursor.execute("UPDATE questions SET Questions = '{q}', Option1 = '{o1}', Option2 = '{o2}', Option3 = '{o3}', Option4 = '{o4}', Answer = '{a}', Hint = '{h}' WHERE Sno = {num};".format(q=question, o1=option1, o2=option2, o3=option3, o4=option4, a=ans, h=hint, num=int(num)))
-        db.commit()
+    if question == "":
+        tkinter.messagebox.showerror("Error", "Question cannot be blank")
+
+    elif ans == "":
+        tkinter.messagebox.showerror("Error", "Answer cannot be blank")
 
     else:
-        my_cursor.execute("INSERT INTO questions (Questions, Option1, Option2, Option3, Option4, Answer, Hint) VALUES ('{q}', '{o1}', '{o2}', '{o3}', '{o4}', '{a}', '{h}');".format(q=question, o1=option1, o2=option2, o3=option3, o4=option4, a=ans, h=hint))
-        db.commit()
 
-    entry_ques.delete(0, END)
-    entry_option1.delete(0, END)
-    entry_option2.delete(0, END)
-    entry_option3.delete(0, END)
-    entry_option4.delete(0, END)
-    entry_hint.delete(0, END)
-    answer_box.delete(0, END)
+        if c is not None:
+            my_cursor.execute("UPDATE questions SET Questions = '{q}', Option1 = '{o1}', Option2 = '{o2}', Option3 = '{o3}', Option4 = '{o4}', Answer = '{a}', Hint = '{h}' WHERE Sno = {num};".format(q=question, o1=option1, o2=option2, o3=option3, o4=option4, a=ans, h=hint, num=int(num)))
+            db.commit()
 
-    num += 1
-    tex = "Add question" + " - " + str(num)
+        else:
+            my_cursor.execute("INSERT INTO questions (Questions, Option1, Option2, Option3, Option4, Answer, Hint) VALUES ('{q}', '{o1}', '{o2}', '{o3}', '{o4}', '{a}', '{h}');".format(q=question, o1=option1, o2=option2, o3=option3, o4=option4, a=ans, h=hint))
+            db.commit()
 
-    ques_num.config(text=tex)
+        entry_ques.delete(0, END)
+        entry_option1.delete(0, END)
+        entry_option2.delete(0, END)
+        entry_option3.delete(0, END)
+        entry_option4.delete(0, END)
+        entry_hint.delete(0, END)
+        answer_box.delete(0, END)
+
+        num += 1
+        tex = "Add question" + " - " + str(num)
+
+        ques_num.config(text=tex)
 
 
 def back():
@@ -132,17 +140,7 @@ def front():
 
 
 def question_button():
-    global answer_box
-    global entry_ques
-    global entry_option1
-    global entry_option2
-    global entry_option3
-    global entry_option4
-    global entry_hint
-    global ques_num
-    global num
-    global win_frame
-    global ques_num
+    global answer_box, entry_ques, entry_option1, entry_option2, entry_option3, entry_option3, entry_option4, entry_hint, ques_num, num, win_frame, ques_num
 
     window = Tk()
     window.title("Add questions")
@@ -229,10 +227,7 @@ def next_go():
 
 
 def get(value):
-    global points
-    global done
-    global wrong_ans
-    global correct_ans
+    global points, done, wrong_ans, correct_ans
 
     my_cursor.execute("SELECT Answer FROM questions WHERE Sno = {ques}".format(ques=ques))
     ans = my_cursor.fetchone()[0]
@@ -262,14 +257,7 @@ def get_name():
 
 
 def score():
-    global ques
-    global correct_ans
-    global wrong_ans
-    global points
-    global hints_used
-    global quit
-    global name_entry
-    global swindow
+    global ques, correct_ans, wrong_ans, points, hints_used, quit, name_entry, swindow
 
     swindow = Tk()
     swindow.title("Scorecard")
@@ -294,9 +282,7 @@ def score():
 
 
 def hint():
-    global done
-    global points
-    global hints_used
+    global done, points, hints_used
 
     my_cursor.execute("SELECT Hint FROM questions WHERE Sno = {ques}".format(ques=ques + 1))
     hint = my_cursor.fetchone()[0]
@@ -330,6 +316,7 @@ def how():
 
 
 def starter():
+    global ques, done, quit
 
     my_cursor.execute("SELECT COUNT(Sno) FROM questions")
     count = my_cursor.fetchone()[0]
@@ -339,10 +326,6 @@ def starter():
         Mwindow.destroy()
 
     frame.destroy()
-
-    global ques
-    global done
-    global quit
 
     my_cursor.execute("SELECT count(Sno) FROM questions")
     total_ques = my_cursor.fetchone()[0]
@@ -590,7 +573,6 @@ Mwindow.iconphoto(True, icon)
 
 image_label = Label(frame, image=image)
 image_label.pack()
-
 
 button_start = Button(frame, text="START GAME", font=("Arial", 20, "bold"), bg="red", command=starter)
 button_start.place(x=315, y=380)
